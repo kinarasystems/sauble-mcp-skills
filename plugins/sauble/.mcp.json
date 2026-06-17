@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "sauble": {
+      "type": "http",
+      "url": "${SAUBLE_MCP_URL}",
+      "headers": {
+        "X-API-Key": "${SAUBLE_TOKEN}",
+        "X-Environment-ID": "${SAUBLE_ENVIRONMENT_ID}"
+      }
+    }
+  }
+}

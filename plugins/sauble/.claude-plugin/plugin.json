@@ -1,0 +1,12 @@
+{
+  "name": "sauble",
+  "displayName": "Sauble",
+  "description": "Root-cause, triage, and investigate your network via the Sauble MCP server.",
+  "version": "0.1.0",
+  "author": { "name": "Kinara Systems" },
+  "homepage": "https://github.com/kinarasystems/sauble-mcp-skills",
+  "repository": "https://github.com/kinarasystems/sauble-mcp-skills",
+  "license": "Apache-2.0",
+  "keywords": ["sauble", "aiops", "rca", "mcp"],
+  "mcpServers": "./.mcp.json"
+}
