@@ -90,3 +90,12 @@ def test_nonenv_header_value_fails(tmp_path):
                                   "headers": {"X-API-Key": "literal-token"}}}
     })
     assert validate.validate(root) != []
+
+
+def test_empty_plugins_fails(tmp_path):
+    root = _make_repo(tmp_path, marketplace={
+        "name": "sauble-mcp-skills",
+        "owner": {"name": "Kinara Systems"},
+        "plugins": [],
+    })
+    assert any("plugins" in e for e in validate.validate(root))
