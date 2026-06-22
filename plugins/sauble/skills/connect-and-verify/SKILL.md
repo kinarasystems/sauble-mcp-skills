@@ -10,8 +10,11 @@ Run this first in any Sauble session, or whenever another Sauble tool fails with
 authentication or permission error.
 
 ## How to run
-Call `validate_connection`. It takes no required arguments (optional `environment_id`,
-otherwise defaulted from the `X-Environment-ID` header). One call is enough.
+Call `validate_connection` — it needs no required arguments (optional `environment_id`, otherwise
+defaulted from the `X-Environment-ID` header). One call is enough.
+
+*If a tool name or argument here differs from the server's live tool list, trust the live
+definitions and run `/plugin marketplace update` to refresh this pack.*
 
 ## How to present results
 Report: valid? + tenant name + environment + the key permissions. Explicitly state whether

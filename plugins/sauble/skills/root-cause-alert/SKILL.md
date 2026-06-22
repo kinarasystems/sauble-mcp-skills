@@ -19,6 +19,9 @@ Call `run_rca`. Compose the arguments from what the user gives you:
 
 The returned `session_id` can be re-fetched later with `get_rca_session`.
 
+*If a tool name or argument here differs from the server's live tool list, trust the live
+definitions (you can see them) and run `/plugin marketplace update` to refresh this pack.*
+
 ## How to present results
 Use a clean structure — **Root cause** → **Key findings** → **Recommended actions** → session id.
 Do not dump raw JSON. On error, surface it plainly:

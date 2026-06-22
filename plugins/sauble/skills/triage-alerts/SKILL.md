@@ -10,11 +10,14 @@ The user wants to see what's been happening — browse recent alerts/RCA session
 the most important one.
 
 ## How to run
-1. Call `list_rca_sessions` (optional `severity`, `limit`, `offset`, `search` — use `search` to
-   filter by serial/text, `offset` to page). Present a short ranked list: session_id, severity,
+1. List recent sessions with `list_rca_sessions` (optional filters: `severity`, `limit`, `offset`,
+   `search` to filter by serial/text or page). Present a short ranked list: session_id, severity,
    serial, summary.
-2. On the user's selection: call `get_rca_session(session_id)` to show the existing RCA, or
-   `run_rca` to analyze a fresh incident if no session covers it.
+2. On the user's selection: re-fetch the chosen session with `get_rca_session`, or run a fresh
+   analysis with `run_rca` if no session covers it.
+
+*If a tool name or argument here differs from the server's live tool list, trust the live
+definitions and run `/plugin marketplace update` to refresh this pack.*
 
 ## How to present results
 Show a compact list first, then — once the user picks one — the chosen session's RCA in the

@@ -31,6 +31,17 @@ Add and enable the plugin in your Claude Code agent:
 
 After installation, **enable** the plugin and **restart/reload** your agent. The bundled MCP server starts only once the plugin is enabled, and the skills load after a reload.
 
+## Updating
+
+Updates are **manual** for third-party marketplaces (auto-update is off by default). To get the latest pack:
+
+```
+/plugin marketplace update sauble-mcp-skills   # refresh the catalog
+/reload-plugins                                # apply: load updated skills + MCP config
+```
+
+(`/plugin` → **Installed** tab shows what's available, and lets you enable auto-update if you'd rather not do it by hand.) The server's **tool surface is discovered live** on every connect, so new server capabilities are usable immediately — updating the pack refreshes the *guidance* (and adds any new skills). See [CHANGELOG.md](CHANGELOG.md) for what changed in each release.
+
 ## The Four Skills
 
 ### connect-and-verify

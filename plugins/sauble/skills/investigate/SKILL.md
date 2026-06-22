@@ -10,13 +10,14 @@ Open-ended questions about an environment's current state ("any unhealthy APs?",
 this site's health"). For a specific incident/alert, use the root-cause-alert skill instead.
 
 ## How to run
-Call `run_analyze(query, ...)`. The signature is `(query, session_id, context, environment_id)` —
-there is **no `wait` parameter**; it returns the analysis synchronously. It can take a couple of
-minutes, so tell the user it's running. Pass the returned `session_id` back on a follow-up `query`
-to continue the same investigation, and use `get_analysis_session` to re-fetch a prior result.
+Reach for the conversational-analysis tool — `run_analyze` in the current surface. Give it your
+`query`; it returns the analysis synchronously (there's no separate wait step), so tell the user
+it may take a couple of minutes. Continue a thread by passing the returned `session_id` back on a
+follow-up query, and re-fetch a prior result with `get_analysis_session`. (Conversational sessions
+use `get_analysis_session`; alert/RCA sessions are re-fetched with a different tool.)
 
-Note: conversational analysis sessions use `get_analysis_session` — not `get_rca_session`,
-which is for alert/RCA sessions.
+*If a tool name or argument here differs from the server's live tool list, trust the live
+definitions and run `/plugin marketplace update` to refresh this pack.*
 
 ## How to present results
 Present the message + findings + recommendations readably (not raw JSON). Offer concrete
