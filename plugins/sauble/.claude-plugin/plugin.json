@@ -1,8 +1,8 @@
 {
-  "name": "sauble",
-  "displayName": "Sauble",
+  "name": "sauble-mcp",
+  "displayName": "Sauble MCP",
   "description": "Root-cause, triage, and investigate your network via the Sauble MCP server.",
-  "version": "0.1.0-beta.1",
+  "version": "0.1.0-beta.2",
   "author": { "name": "Kinara Systems" },
   "homepage": "https://github.com/kinarasystems/sauble-mcp-skills",
   "repository": "https://github.com/kinarasystems/sauble-mcp-skills",

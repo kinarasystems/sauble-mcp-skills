@@ -26,7 +26,7 @@ Add and enable the plugin in your Claude Code agent:
 
 ```
 /plugin marketplace add kinarasystems/sauble-mcp-skills
-/plugin install sauble@sauble-mcp-skills
+/plugin install sauble-mcp@sauble-mcp-skills
 ```
 
 After installation, **enable** the plugin and **restart/reload** your agent. The bundled MCP server starts only once the plugin is enabled, and the skills load after a reload.

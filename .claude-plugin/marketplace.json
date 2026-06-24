@@ -4,7 +4,7 @@
   "description": "Skills for driving Sauble RCA/analysis from your coding agent.",
   "plugins": [
     {
-      "name": "sauble",
+      "name": "sauble-mcp",
       "source": "./plugins/sauble",
       "description": "Root-cause, triage, and investigate your network via the Sauble MCP server.",
       "license": "Apache-2.0",
