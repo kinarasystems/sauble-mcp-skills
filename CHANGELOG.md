@@ -3,6 +3,21 @@
 All notable changes to the `sauble` skills pack. The pack follows [Semantic Versioning](https://semver.org);
 the `version` field in `plugin.json` is the source of truth.
 
+## [0.1.0-beta.3] — 2026-07-14
+### Added
+- **`correlate` skill** → `run_correlation`. Answers a question across all your connected MCP data
+  sources and correlates them (root-cause / health / triage). This is the skill for
+  **playground / bring-your-own-source** environments where you connected your own sources.
+
+### Changed
+- **Environment-aware routing.** `connect-and-verify` now identifies which analysis lane the environment
+  is in (playground / bring-your-own-source → `correlate`; Sauble-curated → `run_analyze`/`run_rca`)
+  and names the skill to use next.
+- **Rescoped `investigate` / `root-cause-alert` / `triage-alerts`** to **Sauble-curated environments
+  only** — their `run_analyze` / `run_rca` tools return no data against your own connectors, so they no
+  longer auto-select there; the correlate skill owns that case.
+- README reframed around the two analysis lanes.
+
 ## [0.1.0-beta.2] — 2026-06-24
 ### Changed
 - **Renamed the plugin `sauble` → `sauble-mcp`** to avoid a name collision with the internal `sauble`

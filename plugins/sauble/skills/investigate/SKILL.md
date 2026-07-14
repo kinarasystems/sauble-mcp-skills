@@ -1,13 +1,18 @@
 ---
 name: investigate
-description: Investigate your network's current health with Sauble — ask open-ended questions about an environment (not a specific alert).
+description: Open-ended health questions about a Sauble-curated environment (e.g. "any unhealthy access points?"). Sauble-curated environments only — for playground / bring-your-own-source environments where you connected your own MCP sources, use the correlate skill instead.
 ---
 
-# Investigate network health with Sauble
+# Investigate a Sauble-curated environment's health
 
 ## When to use
-Open-ended questions about an environment's current state ("any unhealthy APs?", "summarize
-this site's health"). For a specific incident/alert, use the root-cause-alert skill instead.
+Open-ended questions about the current state of a **Sauble-curated** environment ("any unhealthy APs?",
+"summarize this site's health"). For a specific incident/alert in such an environment, use
+root-cause-alert instead.
+
+**Not for playground / bring-your-own-source environments.** If you connected your own MCP data sources,
+`run_analyze` returns no data — use the **correlate** skill instead. Run connect-and-verify if you're
+unsure which kind of environment you have.
 
 ## How to run
 Reach for the conversational-analysis tool — `run_analyze` in the current surface. Give it your

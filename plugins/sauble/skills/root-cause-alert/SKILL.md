@@ -1,13 +1,18 @@
 ---
 name: root-cause-alert
-description: Root-cause a specific network incident or alert with Sauble — give a symptom (device/site/severity) and get findings plus recommended fixes.
+description: Root-cause a specific incident/alert in a Sauble-curated environment (device/site/client symptoms). Sauble-curated environments only — for playground / bring-your-own-source environments where you connected your own MCP sources, use the correlate skill instead.
 ---
 
-# Root-cause an alert with Sauble
+# Root-cause an alert in a Sauble-curated environment
 
 ## When to use
-The user has a specific incident or alert — a device, site, or symptom they want diagnosed.
-For open-ended "how healthy is my network?" questions, use the investigate skill instead.
+A specific incident or alert in a **Sauble-curated** environment — a device, site, or client symptom to
+diagnose. For open-ended "how healthy is my network?" questions in such an environment, use investigate
+instead.
+
+**Not for playground / bring-your-own-source environments.** If you connected your own MCP data sources,
+`run_rca` returns no data — use the **correlate** skill instead. Run connect-and-verify if you're unsure
+which kind of environment you have.
 
 ## How to run
 Call `run_rca`. Compose the arguments from what the user gives you:
