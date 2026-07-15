@@ -3,6 +3,14 @@
 All notable changes to the `sauble` skills pack. The pack follows [Semantic Versioning](https://semver.org);
 the `version` field in `plugin.json` is the source of truth.
 
+## [0.1.0-beta.4] — 2026-07-14
+### Fixed
+- **`connect-and-verify` lane routing.** It now picks the analysis lane from the `playground` field
+  the server returns, instead of inferring it from a controller type. Bring-your-own-source
+  environments that carry a default controller type were being misrouted to the curated skills (and
+  told correlation was "not the tool") — they now correctly route to **correlate**. Falls back to
+  `probe_data_sources` when an older server doesn't return the `playground` field.
+
 ## [0.1.0-beta.3] — 2026-07-14
 ### Added
 - **`correlate` skill** → `run_correlation`. Answers a question across all your connected MCP data
