@@ -21,14 +21,18 @@ Report: valid? + tenant name + environment + the key permissions. Explicitly sta
 `analysis:create` is present (→ the user can run RCA/analysis) or the token is read-only.
 
 ### Then route to the right analysis skill (important)
-Sauble has two analysis lanes; pick by environment type so you don't call a tool that returns no data:
-- **Playground / bring-your-own-source environment** — you connected your own MCP data sources.
-  Signals: `controller_type` is empty/absent, and/or `probe_data_sources` lists your own connected
+Sauble has two analysis lanes. Pick the lane from the **`playground`** field in the
+`validate_connection` result so you don't call a tool that returns no data:
+- **`playground: true`** — a bring-your-own-source environment: you connected your own MCP data
   sources. → Use the **correlate** skill (`run_correlation`). The investigate / root-cause-alert /
-  triage-alerts skills will **not** work here.
-- **Sauble-curated environment** — signals: a `controller_type` is set. → Use **investigate** (health),
+  triage-alerts skills return no data here.
+- **`playground: false`** — a Sauble-curated environment. → Use **investigate** (open-ended health),
   **root-cause-alert** (a specific alert), or **triage-alerts** (recent sessions). Correlation is not
   the tool there.
+
+If the result has no `playground` field (older Sauble server), fall back to the sources: run
+**probe_data_sources** — if it lists data sources you connected yourself, treat it as a
+bring-your-own-source environment and use **correlate**; otherwise use the curated skills.
 
 State which lane the environment is in and name the skill the user should use next.
 
