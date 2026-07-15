@@ -36,35 +36,52 @@ After installation, **enable** the plugin and **restart/reload** your agent. The
 Updates are **manual** for third-party marketplaces (auto-update is off by default). To get the latest pack:
 
 ```
-/plugin marketplace update sauble-mcp-skills   # refresh the catalog
-/reload-plugins                                # apply: load updated skills + MCP config
+/plugin marketplace update sauble-mcp-skills   # refresh the cached catalog from the repo
 ```
 
-(`/plugin` → **Installed** tab shows what's available, and lets you enable auto-update if you'd rather not do it by hand.) The server's **tool surface is discovered live** on every connect, so new server capabilities are usable immediately — updating the pack refreshes the *guidance* (and adds any new skills). See [CHANGELOG.md](CHANGELOG.md) for what changed in each release.
+Then apply the new version one of two ways:
 
-## The Four Skills
+- **Turn on auto-update** — `/plugin` → **Marketplaces** tab → select `sauble-mcp-skills` → enable auto-update. Claude Code updates in the background and prompts you to run `/reload-plugins`.
+- **Or by hand** — uninstall then reinstall the plugin, then `/reload-plugins` to load the new skills + MCP config (no full restart needed).
 
-### connect-and-verify
+The server's **tool surface is discovered live** on every connect, so new server capabilities are usable immediately — updating the pack refreshes the *guidance* (and adds any new skills). See [CHANGELOG.md](CHANGELOG.md) for what changed in each release.
 
-Verify the Sauble connection—confirm that your token, tenant, environment, and permissions are valid. Use this first, or whenever Sauble calls fail with an auth error.
+## The Skills
+
+Sauble has **two analysis lanes** — pick by the kind of environment you connected. Run
+**connect-and-verify** first; it tells you which lane you're in and which skill to use.
+
+### connect-and-verify (run first)
+
+Verify the Sauble connection—confirm that your token, tenant, environment, and permissions are valid, and identify which analysis lane your environment is in. Use this first, or whenever Sauble calls fail with an auth error.
 
 **Example:** "Check my Sauble connection."
 
-### root-cause-alert
+### correlate — for your own connected sources (playground / bring-your-own-source)
 
-Root-cause a specific network incident or alert and get findings plus recommended fixes. Give a symptom (device, site, severity) and the skill will diagnose it.
+If you connected **your own** MCP data sources, this is your skill. It answers a question across **all** your sources and correlates them — root-cause, health check, or separating a real outage from alert noise. Works with your own connectors.
+
+**Example:** "Several access switches at my Miami hub just dropped — correlate across my sources and find the root cause."
+
+---
+
+The next three are for **Sauble-curated environments only**. They use curated-environment analysis and return no data against your own connectors — use **correlate** there instead.
+
+### root-cause-alert (Sauble-curated)
+
+Root-cause a specific incident or alert in a Sauble-curated environment. Give a symptom (device, site, severity) and the skill diagnoses it.
 
 **Example:** "Root-cause: AP 903cb32d33f0 has DNS resolution failures, severity major."
 
-### investigate
+### investigate (Sauble-curated)
 
-Open-ended questions about an environment's current health. Use this for questions like "Are there unhealthy access points?" or "What's the health status of this site?"
+Open-ended questions about a Sauble-curated environment's current health.
 
 **Example:** "Any unhealthy access points right now?"
 
-### triage-alerts
+### triage-alerts (Sauble-curated)
 
-Browse recent RCA and alert sessions and drill into the most important one. Quickly see what alerts have been triggered and explore their details.
+Browse recent RCA/alert sessions in a Sauble-curated environment and drill into the most important one.
 
 **Example:** "Show me recent alerts."
 

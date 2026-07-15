@@ -1,13 +1,18 @@
 ---
 name: triage-alerts
-description: Triage recent Sauble alerts — browse recent RCA/alert sessions and dig into the most important one.
+description: Browse recent RCA/alert sessions in a Sauble-curated environment and drill into the most important one. Sauble-curated environments only — for playground / bring-your-own-source environments where you connected your own MCP sources, use the correlate skill instead.
 ---
 
-# Triage recent Sauble alerts
+# Triage recent alerts in a Sauble-curated environment
 
 ## When to use
-The user wants to see what's been happening — browse recent alerts/RCA sessions and drill into
-the most important one.
+The user wants to see what's been happening in a **Sauble-curated** environment — browse recent RCA/alert
+sessions and drill into the most important one.
+
+**Not for playground / bring-your-own-source environments.** The RCA-session store is empty for
+environments where you connected your own MCP data sources — to find and separate the real problem from
+alert noise there, use the **correlate** skill instead. Run connect-and-verify if you're unsure which
+kind of environment you have.
 
 ## How to run
 1. List recent sessions with `list_rca_sessions` (optional filters: `severity`, `limit`, `offset`,

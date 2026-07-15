@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 
 ALLOWED_TOOLS = {
-    "validate_connection", "run_analyze", "run_rca",
+    "validate_connection", "run_analyze", "run_rca", "run_correlation",
     "get_analysis_session", "get_rca_session", "list_rca_sessions",
 }
 TOOL_RE = re.compile(r"\b(?:run|get|list|validate)_[a-z_]+\b")

@@ -20,6 +20,18 @@ definitions and run `/plugin marketplace update` to refresh this pack.*
 Report: valid? + tenant name + environment + the key permissions. Explicitly state whether
 `analysis:create` is present (→ the user can run RCA/analysis) or the token is read-only.
 
+### Then route to the right analysis skill (important)
+Sauble has two analysis lanes; pick by environment type so you don't call a tool that returns no data:
+- **Playground / bring-your-own-source environment** — you connected your own MCP data sources.
+  Signals: `controller_type` is empty/absent, and/or `probe_data_sources` lists your own connected
+  sources. → Use the **correlate** skill (`run_correlation`). The investigate / root-cause-alert /
+  triage-alerts skills will **not** work here.
+- **Sauble-curated environment** — signals: a `controller_type` is set. → Use **investigate** (health),
+  **root-cause-alert** (a specific alert), or **triage-alerts** (recent sessions). Correlation is not
+  the tool there.
+
+State which lane the environment is in and name the skill the user should use next.
+
 Distinguish the two failure modes — they need different fixes:
 - **Unauthorized** (no/invalid token; the shim or core rejects the key): tell the user to mint a
   fresh PAT in the Sauble UI → Agent Access Tokens and set `SAUBLE_TOKEN` (and the other env vars).
