@@ -36,11 +36,15 @@ After installation, **enable** the plugin and **restart/reload** your agent. The
 Updates are **manual** for third-party marketplaces (auto-update is off by default). To get the latest pack:
 
 ```
-/plugin marketplace update sauble-mcp-skills   # refresh the catalog
-/reload-plugins                                # apply: load updated skills + MCP config
+/plugin marketplace update sauble-mcp-skills   # refresh the cached catalog from the repo
 ```
 
-(`/plugin` → **Installed** tab shows what's available, and lets you enable auto-update if you'd rather not do it by hand.) The server's **tool surface is discovered live** on every connect, so new server capabilities are usable immediately — updating the pack refreshes the *guidance* (and adds any new skills). See [CHANGELOG.md](CHANGELOG.md) for what changed in each release.
+Then apply the new version one of two ways:
+
+- **Turn on auto-update** — `/plugin` → **Marketplaces** tab → select `sauble-mcp-skills` → enable auto-update. Claude Code updates in the background and prompts you to run `/reload-plugins`.
+- **Or by hand** — uninstall then reinstall the plugin, then `/reload-plugins` to load the new skills + MCP config (no full restart needed).
+
+The server's **tool surface is discovered live** on every connect, so new server capabilities are usable immediately — updating the pack refreshes the *guidance* (and adds any new skills). See [CHANGELOG.md](CHANGELOG.md) for what changed in each release.
 
 ## The Skills
 
