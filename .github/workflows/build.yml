@@ -1,0 +1,118 @@
+# ABOUTME: CI that keeps dist/ in sync with source and validates the skill pack.
+name: build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  validate-and-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate skill pack
+        run: python3 scripts/validate.py
+
+      - name: Regenerate distributions
+        run: python3 packaging/build.py
+
+      - name: Fail if dist/ is out of sync with source
+        run: |
+          if ! git diff --exit-code -- dist/; then
+            echo "::error::dist/ is stale. Run 'python3 packaging/build.py' and commit the result."
+            exit 1
+          fi
+
+      - name: Installer smoke test (non-destructive merge)
+        run: |
+          set -euo pipefail
+          export HOME="$(mktemp -d)"
+          mkdir -p "$HOME/.cursor"
+          echo '{"mcpServers":{"github":{"url":"https://mcp.github.com"}}}' > "$HOME/.cursor/mcp.json"
+          SAUBLE_MCP_URL="https://ci.example/mcp" bash dist/install/install.sh cursor --global
+          python3 - <<'PY'
+          import json, os
+          cfg = json.load(open(os.path.expanduser("~/.cursor/mcp.json")))
+          assert "github" in cfg["mcpServers"], "pre-existing server was clobbered"
+          assert "sauble" in cfg["mcpServers"], "sauble server not added"
+          print("OK: sauble added, github preserved")
+          PY
+          bash dist/install/uninstall.sh cursor
+          python3 - <<'PY'
+          import json, os
+          cfg = json.load(open(os.path.expanduser("~/.cursor/mcp.json")))
+          assert "github" in cfg["mcpServers"], "uninstall clobbered another server"
+          assert "sauble" not in cfg["mcpServers"], "uninstall left sauble behind"
+          print("OK: sauble removed, github preserved")
+          PY
+
+      - name: Coexistence + Codex TOML test (never wipe dev pack or other servers)
+        run: |
+          set -euo pipefail
+          export HOME="$(mktemp -d)"
+          # Simulate the internal developer skill pack + an unrelated MCP server.
+          mkdir -p "$HOME/.codex/skills/sauble-auth" "$HOME/.agents"
+          echo dev > "$HOME/.codex/skills/sauble-auth/SKILL.md"
+          echo '{"pack":"internal-dev"}' > "$HOME/.agents/sauble-install.json"
+          printf '[mcp_servers.sentry]\nurl = "https://mcp.sentry.dev/sse"\n' > "$HOME/.codex/config.toml"
+          SAUBLE_MCP_URL="https://ci.example/mcp" bash dist/install/install.sh codex --global
+          grep -q '^\[mcp_servers\.sauble\]' "$HOME/.codex/config.toml" || { echo "sauble block not written"; exit 1; }
+          grep -q 'url = "https://ci.example/mcp"' "$HOME/.codex/config.toml" || { echo "url not templated in"; exit 1; }
+          grep -q '^\[mcp_servers\.sentry\]' "$HOME/.codex/config.toml" || { echo "pre-existing sentry server clobbered"; exit 1; }
+          bash dist/install/uninstall.sh codex
+          grep -q '^\[mcp_servers\.sauble\]' "$HOME/.codex/config.toml" && { echo "sauble block not removed"; exit 1; } || true
+          grep -q '^\[mcp_servers\.sentry\]' "$HOME/.codex/config.toml" || { echo "uninstall clobbered sentry"; exit 1; }
+          python3 - <<'PY'
+          import os
+          h = os.path.expanduser("~")
+          sk = os.listdir(f"{h}/.codex/skills")
+          ag = os.listdir(f"{h}/.agents")
+          assert "sauble-auth" in sk, "uninstall wiped the internal sauble-* dev pack"
+          assert not any(d.startswith("sauble-mcp-") for d in sk), "product skills left behind"
+          assert "sauble-install.json" in ag, "uninstall wiped the dev pack metadata"
+          print("OK: dev pack + sentry untouched; sauble-mcp-* + sauble TOML block fully removed")
+          PY
+
+  windows-installer:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: PowerShell installer test (non-destructive merge, no BOM, dev pack safe)
+        shell: pwsh
+        run: |
+          $env:USERPROFILE = (New-Item -ItemType Directory -Path (Join-Path $env:RUNNER_TEMP "home-$(Get-Random)")).FullName
+          # Cursor: pre-existing server must survive install + uninstall, and the file must stay BOM-free.
+          New-Item -ItemType Directory -Force -Path (Join-Path $env:USERPROFILE '.cursor') | Out-Null
+          $cfg = Join-Path $env:USERPROFILE '.cursor\mcp.json'
+          '{"mcpServers":{"github":{"url":"https://mcp.github.com"}}}' | Set-Content $cfg
+          $env:SAUBLE_MCP_URL = 'https://ci.example/mcp'
+          ./dist/install/install.ps1 cursor -Scope global
+          $data = Get-Content $cfg -Raw | ConvertFrom-Json
+          if (-not $data.mcpServers.github) { throw 'pre-existing github server was clobbered' }
+          if (-not $data.mcpServers.sauble) { throw 'sauble server not added' }
+          $bytes = [System.IO.File]::ReadAllBytes($cfg)
+          if ($bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF) { throw 'config was written with a UTF-8 BOM' }
+          # Codex: dev-pack skill + sentry server must survive; url must template in.
+          New-Item -ItemType Directory -Force -Path (Join-Path $env:USERPROFILE '.codex\skills\sauble-auth') | Out-Null
+          'dev' | Set-Content (Join-Path $env:USERPROFILE '.codex\skills\sauble-auth\SKILL.md')
+          "[mcp_servers.sentry]`nurl = ""https://mcp.sentry.dev/sse""" | Set-Content (Join-Path $env:USERPROFILE '.codex\config.toml')
+          ./dist/install/install.ps1 codex -Scope global
+          $toml = Get-Content (Join-Path $env:USERPROFILE '.codex\config.toml') -Raw
+          if ($toml -notmatch '\[mcp_servers\.sauble\]') { throw 'sauble block not written' }
+          if ($toml -notmatch 'https://ci\.example/mcp') { throw 'url not templated in' }
+          if ($toml -notmatch '\[mcp_servers\.sentry\]') { throw 'sentry server clobbered' }
+          ./dist/install/uninstall.ps1 cursor
+          ./dist/install/uninstall.ps1 codex
+          $data = Get-Content $cfg -Raw | ConvertFrom-Json
+          if (-not $data.mcpServers.github) { throw 'uninstall clobbered github' }
+          if ($data.mcpServers.sauble) { throw 'uninstall left sauble behind' }
+          $toml = Get-Content (Join-Path $env:USERPROFILE '.codex\config.toml') -Raw
+          if ($toml -match '\[mcp_servers\.sauble\]') { throw 'uninstall left sauble TOML block' }
+          if ($toml -notmatch '\[mcp_servers\.sentry\]') { throw 'uninstall clobbered sentry' }
+          if (-not (Test-Path (Join-Path $env:USERPROFILE '.codex\skills\sauble-auth'))) { throw 'uninstall wiped the dev pack' }
+          Write-Host 'OK: Windows installers non-destructive, BOM-free, dev pack safe'

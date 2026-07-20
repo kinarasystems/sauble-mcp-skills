@@ -1,50 +1,83 @@
 # Sauble MCP Skills
 
-Skills to drive Sauble RCA and network analysis from your Claude Code agent.
+Skills to drive Sauble RCA and network analysis from your coding agent — **Claude Code, Codex,
+Cursor, and Windsurf**. The skills are one portable [Agent Skills](https://code.claude.com/docs/skills)
+format; only the way you register the MCP server and drop in the skills differs per tool.
 
 ## Prerequisites
 
-Before using these skills, mint a Personal Access Token (PAT) in the Sauble UI:
+Mint a Personal Access Token (PAT) in the Sauble UI:
 
 1. Log into the Sauble UI
 2. Navigate to **Agent Access Tokens**
 3. Create a new PAT (looks like `sk_user_…`)
 
-Then export these three environment variables **before launching your agent**. These are interpolated at agent startup, not at runtime—if they are not set before launch, the MCP server will fail to initialize:
+Then make these three values available to your agent. **They are read when the agent launches, not at
+runtime** — set them before you start the agent.
 
-```bash
-export SAUBLE_MCP_URL=https://your-sauble-instance.com/mcp
-export SAUBLE_TOKEN=sk_user_...
-export SAUBLE_ENVIRONMENT_ID=your-environment-id
-```
+| OS | Set an environment variable |
+|---|---|
+| **macOS / Linux** (bash/zsh) | `export SAUBLE_MCP_URL=…` |
+| **Windows** (PowerShell) | `$env:SAUBLE_MCP_URL = "…"` |
 
-**Critical:** The `SAUBLE_MCP_URL` must include the `/mcp` path—a common mistake is omitting it.
+The three variables are `SAUBLE_MCP_URL` (must include the `/mcp` path), `SAUBLE_TOKEN` (your PAT), and
+`SAUBLE_ENVIRONMENT_ID`.
 
 ## Install
 
-Add and enable the plugin in your Claude Code agent:
+Pick your agent. macOS and Linux are identical; Windows differences are noted.
+
+### Claude Code
+
+The pack ships as a plugin that bundles the skills **and** the MCP server:
 
 ```
 /plugin marketplace add kinarasystems/sauble-mcp-skills
 /plugin install sauble-mcp@sauble-mcp-skills
 ```
 
-After installation, **enable** the plugin and **restart/reload** your agent. The bundled MCP server starts only once the plugin is enabled, and the skills load after a reload.
+Enable the plugin and reload. Export the three variables in your shell first.
+
+### Codex, Cursor, Windsurf
+
+These read the same skills from the open Agent Skills standard; the installer drops the skills into the
+right directory and adds the `sauble` MCP server **without touching your other servers** (it backs up
+the config first and only adds/updates the `sauble` entry).
+
+```bash
+# macOS / Linux — from a checkout of this repo
+./dist/install/install.sh codex      # or: cursor | windsurf
+```
+```powershell
+# Windows (PowerShell)
+./dist/install/install.ps1 codex     # or: cursor | windsurf
+```
+
+Options: `--global` (user-wide, the default for Codex/Windsurf) · `--project DIR` (repo-local skills) ·
+`--skills-only` / `--mcp-only`. Uninstall with `./dist/install/uninstall.sh <agent>`.
+
+Prefer to wire it up by hand? The exact per-tool config lives in [`dist/mcp/`](dist/mcp):
+
+- **Codex** — add the block in [`dist/mcp/codex.toml`](dist/mcp/codex.toml) to `~/.codex/config.toml`
+  (`%USERPROFILE%\.codex\config.toml` on Windows). `codex mcp add` can't set the custom headers, so use
+  the block. Copy the skills into `~/.codex/skills/`.
+- **Cursor** — click the one-click link in [`dist/mcp/cursor-deeplink.txt`](dist/mcp/cursor-deeplink.txt)
+  (Cursor merges it for you), or add [`dist/mcp/cursor.json`](dist/mcp/cursor.json) to `.cursor/mcp.json`.
+  Skills live in `.agents/skills/`.
+- **Windsurf** — add [`dist/mcp/windsurf.json`](dist/mcp/windsurf.json) via the Plugins UI or
+  `~/.codeium/windsurf/mcp_config.json`. Skills live in `.windsurf/skills/`.
 
 ## Updating
 
-Updates are **manual** for third-party marketplaces (auto-update is off by default). To get the latest pack:
+The pack version is in [`dist/VERSION`](dist/VERSION); see [CHANGELOG.md](CHANGELOG.md) for what changed.
+The server's **tool surface is discovered live** on every connect, so new server capabilities work
+immediately — updating the pack refreshes the *guidance* and adds any new skills.
 
-```
-/plugin marketplace update sauble-mcp-skills   # refresh the cached catalog from the repo
-```
-
-Then apply the new version one of two ways:
-
-- **Turn on auto-update** — `/plugin` → **Marketplaces** tab → select `sauble-mcp-skills` → enable auto-update. Claude Code updates in the background and prompts you to run `/reload-plugins`.
-- **Or by hand** — uninstall then reinstall the plugin, then `/reload-plugins` to load the new skills + MCP config (no full restart needed).
-
-The server's **tool surface is discovered live** on every connect, so new server capabilities are usable immediately — updating the pack refreshes the *guidance* (and adds any new skills). See [CHANGELOG.md](CHANGELOG.md) for what changed in each release.
+- **Claude Code** — `/plugin marketplace update sauble-mcp-skills`, then reinstall (or enable
+  auto-update in the `/plugin` → **Marketplaces** tab), then `/reload-plugins`.
+- **Codex / Cursor / Windsurf** — `git pull` and re-run `install.sh` / `install.ps1`. The re-run
+  overwrites only the `sauble-mcp-*` skills and re-adds the server if your URL changed; other servers and
+  skills are left alone. Restart the agent to pick up new skills.
 
 ## The Skills
 
@@ -90,6 +123,14 @@ Browse recent RCA/alert sessions in a Sauble-curated environment and drill into 
 - The `root-cause-alert` and `investigate` skills can take 2–3 minutes to complete; plan accordingly.
 - If Sauble calls fail with an authentication error, run the `connect-and-verify` skill first to check your connection.
 - Each skill has optional parameters (device serial, site ID, time range, severity) for more targeted analysis.
+
+## How this pack is built
+
+`plugins/sauble/` is the source of truth (the Claude plugin + skills + `.mcp.json`). The non-Claude
+distributions under [`dist/`](dist) are generated from it by [`packaging/build.py`](packaging/build.py)
+and kept in sync by CI — never hand-edit `dist/`. Run `python3 packaging/build.py` after changing a
+skill. The per-agent × per-OS instruction matrix that the installers and the web UI both read is
+[`dist/instructions.json`](dist/instructions.json).
 
 ## License
 

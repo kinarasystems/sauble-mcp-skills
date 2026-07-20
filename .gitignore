@@ -4,3 +4,8 @@ __pycache__/
 venv/
 .pytest_cache/
 .DS_Store
+
+# Config backups written by the installers at install time (never committed)
+*.bak.*
+# Skill dirs an in-repo installer run would create (test artifacts)
+/.agents/

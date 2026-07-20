@@ -1,0 +1,1 @@
+cursor://anysphere.cursor-deeplink/mcp/install?name=sauble&config=eyJ1cmwiOiAiJHtlbnY6U0FVQkxFX01DUF9VUkx9IiwgImhlYWRlcnMiOiB7IlgtQVBJLUtleSI6ICIke2VudjpTQVVCTEVfVE9LRU59IiwgIlgtRW52aXJvbm1lbnQtSUQiOiAiJHtlbnY6U0FVQkxFX0VOVklST05NRU5UX0lEfSJ9fQ==
