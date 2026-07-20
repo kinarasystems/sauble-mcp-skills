@@ -1,0 +1,114 @@
+{
+  "version": "0.1.0-beta.4",
+  "server_name": "sauble",
+  "marketplace_repo": "kinarasystems/sauble-mcp-skills",
+  "env_vars": [
+    "SAUBLE_MCP_URL",
+    "SAUBLE_TOKEN",
+    "SAUBLE_ENVIRONMENT_ID"
+  ],
+  "skills": [
+    {
+      "name": "connect-and-verify",
+      "description": "Verify the Sauble connection \u2014 confirm the token, tenant, environment, and whether you can run analyses. Use first, or whenever Sauble calls fail with an auth error."
+    },
+    {
+      "name": "correlate",
+      "description": "Answer a question across ALL your connected data sources and correlate the results \u2014 root-cause, health, or triage for playground / bring-your-own-source environments where you connected your own MCP data sources. The default when you've connected your own sources."
+    },
+    {
+      "name": "investigate",
+      "description": "Open-ended health questions about a Sauble-curated environment (e.g. \"any unhealthy access points?\"). Sauble-curated environments only \u2014 for playground / bring-your-own-source environments where you connected your own MCP sources, use the correlate skill instead."
+    },
+    {
+      "name": "root-cause-alert",
+      "description": "Root-cause a specific incident/alert in a Sauble-curated environment (device/site/client symptoms). Sauble-curated environments only \u2014 for playground / bring-your-own-source environments where you connected your own MCP sources, use the correlate skill instead."
+    },
+    {
+      "name": "triage-alerts",
+      "description": "Browse recent RCA/alert sessions in a Sauble-curated environment and drill into the most important one. Sauble-curated environments only \u2014 for playground / bring-your-own-source environments where you connected your own MCP sources, use the correlate skill instead."
+    }
+  ],
+  "os": {
+    "posix": {
+      "label": "macOS / Linux",
+      "shell": "bash/zsh",
+      "env_lines": [
+        "export SAUBLE_MCP_URL=<SAUBLE_MCP_URL>",
+        "export SAUBLE_TOKEN=<SAUBLE_TOKEN>",
+        "export SAUBLE_ENVIRONMENT_ID=<SAUBLE_ENVIRONMENT_ID>"
+      ],
+      "paths": {
+        "codex_toml": "~/.codex/config.toml",
+        "codex_skills": "~/.codex/skills",
+        "cursor_mcp": "~/.cursor/mcp.json",
+        "windsurf_mcp": "~/.codeium/windsurf/mcp_config.json",
+        "windsurf_skills": "~/.windsurf/skills",
+        "agents_skills": "~/.agents/skills"
+      }
+    },
+    "windows": {
+      "label": "Windows",
+      "shell": "PowerShell",
+      "env_lines": [
+        "$env:SAUBLE_MCP_URL = \"<SAUBLE_MCP_URL>\"",
+        "$env:SAUBLE_TOKEN = \"<SAUBLE_TOKEN>\"",
+        "$env:SAUBLE_ENVIRONMENT_ID = \"<SAUBLE_ENVIRONMENT_ID>\""
+      ],
+      "paths": {
+        "codex_toml": "%USERPROFILE%\\.codex\\config.toml",
+        "codex_skills": "%USERPROFILE%\\.codex\\skills",
+        "cursor_mcp": "%USERPROFILE%\\.cursor\\mcp.json",
+        "windsurf_mcp": "%USERPROFILE%\\.codeium\\windsurf\\mcp_config.json",
+        "windsurf_skills": "%USERPROFILE%\\.windsurf\\skills",
+        "agents_skills": "%USERPROFILE%\\.agents\\skills"
+      }
+    }
+  },
+  "agents": [
+    {
+      "id": "claude-code",
+      "label": "Claude Code",
+      "connect": "plugin",
+      "skills_source": "bundled with the plugin",
+      "install": [
+        "/plugin marketplace add kinarasystems/sauble-mcp-skills",
+        "/plugin install sauble-mcp@sauble-mcp-skills"
+      ],
+      "update": "In Claude Code: /plugin marketplace update sauble-mcp-skills, then reinstall (or enable auto-update in the /plugin Marketplaces tab).",
+      "note": "Export the three variables in your shell before launching Claude Code \u2014 the bundled MCP server reads them at startup."
+    },
+    {
+      "id": "codex",
+      "label": "Codex",
+      "connect": "config-block",
+      "config_file": "codex_toml",
+      "config_kind": "toml",
+      "skills_dir": "codex_skills",
+      "skills_dir_alt": "agents_skills",
+      "install": null,
+      "update": "Re-run the installer (or copy the latest skills into your skills dir). The MCP block only changes if your Sauble URL changes.",
+      "note": "codex mcp add cannot set custom headers, so add the block below to your Codex config (or use the installer, which appends it safely without touching your other servers)."
+    },
+    {
+      "id": "cursor",
+      "label": "Cursor",
+      "connect": "deeplink-or-config",
+      "config_file": "cursor_mcp",
+      "config_kind": "json",
+      "skills_dir": "agents_skills",
+      "update": "Re-run the installer or re-copy the skills folder. Cursor rediscovers skills on restart.",
+      "note": "Use the one-click Add-to-Cursor link (Cursor merges it into your mcp.json for you), or add the fragment below."
+    },
+    {
+      "id": "windsurf",
+      "label": "Windsurf",
+      "connect": "ui-or-config",
+      "config_file": "windsurf_mcp",
+      "config_kind": "json",
+      "skills_dir": "windsurf_skills",
+      "update": "Replace the skills folder with the new version and reload Windsurf.",
+      "note": "Add the server via Windsurf's Plugins UI, or paste the fragment below into mcp_config.json."
+    }
+  ]
+}

@@ -3,6 +3,18 @@
 All notable changes to the `sauble` skills pack. The pack follows [Semantic Versioning](https://semver.org);
 the `version` field in `plugin.json` is the source of truth.
 
+## [Unreleased]
+### Added
+- **Multi-agent distribution.** The same skills now install into **Codex, Cursor, and Windsurf**
+  alongside Claude Code, via the open Agent Skills standard. `packaging/build.py` generates per-tool
+  artifacts under `dist/` (skills copy, per-tool MCP config, `instructions.json` matrix, `install.sh`
+  /`install.ps1`/`uninstall.sh`) from the `plugins/sauble/` source; CI keeps `dist/` in sync.
+- **Non-destructive installers** for macOS/Linux and Windows: they back up the target MCP config and
+  only add/update the `sauble` server entry, leaving other servers and skills untouched. Skills install
+  under a `sauble-mcp-*` namespace (distinct from the internal `sauble-*` developer pack), and uninstall
+  removes only `sauble-mcp-*` skills, the `sauble` server entry, and this pack's own install metadata —
+  the developer pack sharing the same skills dir is never touched.
+
 ## [0.1.0-beta.4] — 2026-07-14
 ### Fixed
 - **`connect-and-verify` lane routing.** It now picks the analysis lane from the `playground` field

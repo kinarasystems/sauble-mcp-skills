@@ -1,0 +1,23 @@
+{
+  "name": "sauble-mcp-skills",
+  "version": "0.1.0-beta.4",
+  "server": {
+    "mcpServers": {
+      "sauble": {
+        "type": "http",
+        "url": "${SAUBLE_MCP_URL}",
+        "headers": {
+          "X-API-Key": "${SAUBLE_TOKEN}",
+          "X-Environment-ID": "${SAUBLE_ENVIRONMENT_ID}"
+        }
+      }
+    }
+  },
+  "skills": [
+    "connect-and-verify",
+    "correlate",
+    "investigate",
+    "root-cause-alert",
+    "triage-alerts"
+  ]
+}
