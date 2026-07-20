@@ -1,4 +1,4 @@
-# ABOUTME: Installs the Sauble skill pack into Codex/Cursor/Windsurf on Windows,
+﻿# ABOUTME: Installs the Sauble skill pack into Codex/Cursor/Windsurf on Windows,
 # ABOUTME: merging into existing MCP config non-destructively (backup + never overwrite other servers).
 [CmdletBinding()]
 param(
@@ -20,7 +20,7 @@ $SkillsSrc = Join-Path $Dist 'skills'
 $Version = (Get-Content (Join-Path $Dist 'VERSION') -Raw).Trim()
 
 # Write UTF-8 WITHOUT a BOM. Windows PowerShell 5.1's `-Encoding utf8` prepends a
-# BOM, which strict JSON/TOML parsers reject — that would corrupt the user's
+# BOM, which strict JSON/TOML parsers reject - that would corrupt the user's
 # existing config on rewrite. This helper is BOM-free on both 5.1 and 7+.
 function Write-Text($path, $text) {
   [System.IO.File]::WriteAllText($path, $text, (New-Object System.Text.UTF8Encoding($false)))
@@ -94,7 +94,7 @@ switch ($Agent) {
       $cfg = Join-Path $Home_ '.codex\config.toml'
       New-Item -ItemType Directory -Force -Path (Split-Path -Parent $cfg) | Out-Null
       Backup-File $cfg
-      # Idempotent: drop any existing sauble block, then write the current one —
+      # Idempotent: drop any existing sauble block, then write the current one -
       # so a re-run with a changed -Url updates in place, like the other tools.
       Remove-SaubleToml $cfg
       $block = (Get-Content (Join-Path $Dist 'mcp\codex.toml') -Raw).TrimEnd()
@@ -112,7 +112,7 @@ switch ($Agent) {
     if (-not $SkillsOnly) {
       $cfg = if ($Scope -eq 'global') { Join-Path $Home_ '.cursor\mcp.json' } else { Join-Path $ProjectDir '.cursor\mcp.json' }
       Merge-Json $cfg (Join-Path $Dist 'mcp\cursor.json')
-      Write-Host "  tip: one-click install also available — see dist\mcp\cursor-deeplink.txt"
+      Write-Host "  tip: one-click install also available - see dist\mcp\cursor-deeplink.txt"
     }
   }
   'windsurf' {
