@@ -51,7 +51,9 @@ def write_text(path: Path, content: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     if not content.endswith("\n"):
         content += "\n"
-    path.write_text(content, encoding="utf-8")
+    # newline="\n" keeps LF on every platform. Without it, Windows translates "\n"
+    # to CRLF and churns every generated artifact relative to the Unix/CI baseline.
+    path.write_text(content, encoding="utf-8", newline="\n")
 
 
 def write_json(path: Path, data: object) -> None:
@@ -247,15 +249,30 @@ def copy_skills() -> None:
 
 
 def copy_installers() -> None:
-    """Copy the static installer scripts into dist/install/, preserving exec bits."""
+    """Copy the static installer scripts into dist/install/, preserving exec bits.
+
+    PowerShell scripts are written with a UTF-8 BOM. Windows PowerShell 5.1 decodes a
+    BOM-less .ps1 as the system ANSI codepage, so any non-ASCII byte (e.g. an em-dash)
+    turns into stray characters that break parsing; a BOM forces UTF-8 decoding. The
+    templates themselves stay BOM-free for clean diffs, so the BOM is added here at
+    copy time. Shell scripts must stay BOM-free (a BOM breaks the shebang line), so
+    those are copied verbatim.
+    """
     templates = ROOT / "packaging" / "templates"
     dest = DIST / "install"
     dest.mkdir(parents=True, exist_ok=True)
+    bom = b"\xef\xbb\xbf"
     for script in sorted(templates.glob("install*")) + sorted(templates.glob("uninstall*")):
         target = dest / script.name
-        shutil.copy2(script, target)
-        if script.suffix == ".sh":
-            target.chmod(0o755)
+        if script.suffix == ".ps1":
+            data = script.read_bytes()
+            if not data.startswith(bom):
+                data = bom + data
+            target.write_bytes(data)
+        else:
+            shutil.copy2(script, target)
+            if script.suffix == ".sh":
+                target.chmod(0o755)
 
 
 def main() -> None:

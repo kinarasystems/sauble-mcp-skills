@@ -1,4 +1,4 @@
-# ABOUTME: Removes the Sauble skill pack from Codex/Cursor/Windsurf on Windows,
+﻿# ABOUTME: Removes the Sauble skill pack from Codex/Cursor/Windsurf on Windows,
 # ABOUTME: deleting only sauble-mcp-* skills and the `sauble` MCP entry (other packs/config untouched).
 [CmdletBinding()]
 param(
@@ -25,7 +25,7 @@ function Backup-File($path) {
 
 function Remove-Skills($target) {
   if (-not (Test-Path $target)) { return }
-  # Only sauble-mcp-* — never the internal sauble-* developer skill pack.
+  # Only sauble-mcp-* - never the internal sauble-* developer skill pack.
   $dirs = Get-ChildItem -Directory $target -Filter 'sauble-mcp-*' -ErrorAction SilentlyContinue
   foreach ($d in $dirs) { Remove-Item -Recurse -Force $d.FullName }
   Write-Host "  removed $($dirs.Count) sauble-mcp-* skills from $target"
