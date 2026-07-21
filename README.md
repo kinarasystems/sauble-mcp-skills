@@ -46,12 +46,16 @@ the config first and only adds/updates the `sauble` entry).
 
 ```bash
 # macOS / Linux — from a checkout of this repo
-./dist/install/install.sh codex      # or: cursor | windsurf
+./dist/install/install.sh codex      # or: cursor | windsurf | windsurf-jetbrains
 ```
 ```powershell
 # Windows (PowerShell)
-./dist/install/install.ps1 codex     # or: cursor | windsurf
+./dist/install/install.ps1 codex     # or: cursor | windsurf | windsurf-jetbrains
 ```
+
+Pick `windsurf` for the **standalone Windsurf editor** and `windsurf-jetbrains` for the **Windsurf
+plugin running inside a JetBrains IDE** (IntelliJ/PyCharm/etc.) — they use different config and skills
+paths, so the target matters.
 
 Options: `--global` (user-wide, the default for Codex/Windsurf) · `--project DIR` (repo-local skills) ·
 `--skills-only` / `--mcp-only`. Uninstall with `./dist/install/uninstall.sh <agent>`.
@@ -64,8 +68,12 @@ Prefer to wire it up by hand? The exact per-tool config lives in [`dist/mcp/`](d
 - **Cursor** — click the one-click link in [`dist/mcp/cursor-deeplink.txt`](dist/mcp/cursor-deeplink.txt)
   (Cursor merges it for you), or add [`dist/mcp/cursor.json`](dist/mcp/cursor.json) to `.cursor/mcp.json`.
   Skills live in `.agents/skills/`.
-- **Windsurf** — add [`dist/mcp/windsurf.json`](dist/mcp/windsurf.json) via the Plugins UI or
-  `~/.codeium/windsurf/mcp_config.json`. Skills live in `.windsurf/skills/`.
+- **Windsurf** (standalone editor) — add [`dist/mcp/windsurf.json`](dist/mcp/windsurf.json) via the
+  Plugins UI or `~/.codeium/windsurf/mcp_config.json`. Skills live in `.windsurf/skills/`.
+- **Windsurf plugin (JetBrains)** — the plugin inside IntelliJ/PyCharm reads MCP config from
+  `~/.codeium/mcp_config.json` (top level, **not** `~/.codeium/windsurf/`) and skills from
+  `~/.codeium/skills/`. Add/refresh the `sauble` server under **Settings → Tools → Windsurf Settings**
+  and enable the Cascade tool window.
 
 ## Updating
 

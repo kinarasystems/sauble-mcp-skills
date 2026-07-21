@@ -10,8 +10,10 @@ SKILLS_SRC="$DIST/skills"
 
 usage() {
   cat <<'EOF'
-Usage: install.sh <codex|cursor|windsurf> [options]
+Usage: install.sh <codex|cursor|windsurf|windsurf-jetbrains> [options]
 
+  windsurf            the standalone Windsurf editor (~/.windsurf/skills + ~/.codeium/windsurf)
+  windsurf-jetbrains  the JetBrains "Windsurf Plugin" (Codeium): ~/.codeium/skills + ~/.codeium/mcp_config.json
   --global        install skills into the user-global skills dir (default for codex/windsurf)
   --project DIR   install skills into DIR/.agents (cursor/codex) or DIR/.windsurf (default: cwd)
   --skills-only   install skills, skip MCP server registration
@@ -26,7 +28,7 @@ EOF
 
 AGENT="${1:-}"; shift || true
 [ -z "$AGENT" ] && { usage; exit 1; }
-case "$AGENT" in codex|cursor|windsurf) ;; -h|--help) usage; exit 0 ;; *) echo "Unknown agent: $AGENT" >&2; usage; exit 1 ;; esac
+case "$AGENT" in codex|cursor|windsurf|windsurf-jetbrains) ;; -h|--help) usage; exit 0 ;; *) echo "Unknown agent: $AGENT" >&2; usage; exit 1 ;; esac
 
 SCOPE="global"; PROJECT_DIR="$PWD"; DO_SKILLS=1; DO_MCP=1; MCP_URL="${SAUBLE_MCP_URL:-}"
 while [ $# -gt 0 ]; do
@@ -144,6 +146,17 @@ case "$AGENT" in
     [ "$DO_SKILLS" = 1 ] && install_skills "$SKILLS_DIR"
     if [ "$DO_MCP" = 1 ]; then
       CFG="$HOME/.codeium/windsurf/mcp_config.json"
+      merge_json "$CFG" "$DIST/mcp/windsurf.json"
+    fi
+    ;;
+  windsurf-jetbrains)
+    # JetBrains "Windsurf Plugin" (Codeium): skills in ~/.codeium/skills, MCP config in
+    # ~/.codeium/mcp_config.json - NOT the standalone editor's ~/.windsurf + ~/.codeium/windsurf
+    # paths. User-global only; the plugin reads no project-scoped dirs, so --project is ignored.
+    SKILLS_DIR="$HOME/.codeium/skills"
+    [ "$DO_SKILLS" = 1 ] && install_skills "$SKILLS_DIR"
+    if [ "$DO_MCP" = 1 ]; then
+      CFG="$HOME/.codeium/mcp_config.json"
       merge_json "$CFG" "$DIST/mcp/windsurf.json"
     fi
     ;;

@@ -3,7 +3,7 @@
 [CmdletBinding()]
 param(
   [Parameter(Mandatory=$true, Position=0)]
-  [ValidateSet('codex','cursor','windsurf')]
+  [ValidateSet('codex','cursor','windsurf','windsurf-jetbrains')]
   [string]$Agent,
   [string]$ProjectDir = (Get-Location).Path
 )
@@ -81,6 +81,10 @@ switch ($Agent) {
     Remove-Skills (Join-Path $Home_ '.windsurf\skills')
     Remove-Skills (Join-Path $ProjectDir '.windsurf\skills')
     Remove-Json (Join-Path $Home_ '.codeium\windsurf\mcp_config.json')
+  }
+  'windsurf-jetbrains' {
+    Remove-Skills (Join-Path $Home_ '.codeium\skills')
+    Remove-Json (Join-Path $Home_ '.codeium\mcp_config.json')
   }
 }
 

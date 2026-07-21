@@ -167,6 +167,8 @@ def config_paths(profile: str) -> dict[str, str]:
         "cursor_mcp": p(".cursor", "mcp.json"),
         "windsurf_mcp": p(".codeium", "windsurf", "mcp_config.json"),
         "windsurf_skills": p(".windsurf", "skills"),
+        "windsurf_jetbrains_mcp": p(".codeium", "mcp_config.json"),
+        "windsurf_jetbrains_skills": p(".codeium", "skills"),
         "agents_skills": p(".agents", "skills"),
     }
 
@@ -220,6 +222,16 @@ def instruction_matrix(skills: list[dict]) -> dict:
             "skills_dir": "windsurf_skills",  # .windsurf/skills — distinct from the MCP config file
             "update": "Replace the skills folder with the new version and reload Windsurf.",
             "note": "Add the server via Windsurf's Plugins UI, or paste the fragment below into mcp_config.json.",
+        },
+        {
+            "id": "windsurf-jetbrains",
+            "label": "Windsurf Plugin (JetBrains)",
+            "connect": "ui-or-config",
+            "config_file": "windsurf_jetbrains_mcp",
+            "config_kind": "json",
+            "skills_dir": "windsurf_jetbrains_skills",
+            "update": "Replace the skills folder, then refresh MCP in Settings > Tools > Windsurf Settings.",
+            "note": "The JetBrains Windsurf plugin (Codeium, inside IntelliJ/PyCharm) reads MCP config from ~/.codeium/mcp_config.json and skills from ~/.codeium/skills — different paths from the standalone Windsurf editor. Add/refresh the server under Settings > Tools > Windsurf Settings (not the Cascade menu), and make sure the Cascade tool window is enabled.",
         },
     ]
     return {
