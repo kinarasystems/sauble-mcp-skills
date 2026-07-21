@@ -7,7 +7,7 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DIST="$(cd "$HERE/.." && pwd)"
 
 AGENT="${1:-}"; shift || true
-[ -z "$AGENT" ] && { echo "Usage: uninstall.sh <codex|cursor|windsurf> [--project DIR]" >&2; exit 1; }
+[ -z "$AGENT" ] && { echo "Usage: uninstall.sh <codex|cursor|windsurf|windsurf-jetbrains> [--project DIR]" >&2; exit 1; }
 PROJECT_DIR="$PWD"
 [ "${1:-}" = "--project" ] && PROJECT_DIR="${2:-$PWD}"
 
@@ -86,6 +86,9 @@ case "$AGENT" in
   windsurf)
     remove_skills "$HOME/.windsurf/skills"; remove_skills "$PROJECT_DIR/.windsurf/skills"
     remove_json "$HOME/.codeium/windsurf/mcp_config.json" ;;
+  windsurf-jetbrains)
+    remove_skills "$HOME/.codeium/skills"
+    remove_json "$HOME/.codeium/mcp_config.json" ;;
   *) echo "Unknown agent: $AGENT" >&2; exit 1 ;;
 esac
 

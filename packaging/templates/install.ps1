@@ -3,7 +3,7 @@
 [CmdletBinding()]
 param(
   [Parameter(Mandatory=$true, Position=0)]
-  [ValidateSet('codex','cursor','windsurf')]
+  [ValidateSet('codex','cursor','windsurf','windsurf-jetbrains')]
   [string]$Agent,
   [ValidateSet('global','project')]
   [string]$Scope = 'global',
@@ -120,6 +120,18 @@ switch ($Agent) {
     if (-not $McpOnly) { Install-Skills $skillsDir }
     if (-not $SkillsOnly) {
       $cfg = Join-Path $Home_ '.codeium\windsurf\mcp_config.json'
+      Merge-Json $cfg (Join-Path $Dist 'mcp\windsurf.json')
+    }
+  }
+  'windsurf-jetbrains' {
+    # JetBrains "Windsurf Plugin" (Codeium): skills live in ~/.codeium/skills and the MCP
+    # config is ~/.codeium/mcp_config.json - NOT the standalone editor's ~/.windsurf/skills
+    # and ~/.codeium/windsurf/mcp_config.json. User-global only; the plugin reads no
+    # project-scoped dirs, so -Scope / -ProjectDir do not apply here.
+    $skillsDir = Join-Path $Home_ '.codeium\skills'
+    if (-not $McpOnly) { Install-Skills $skillsDir }
+    if (-not $SkillsOnly) {
+      $cfg = Join-Path $Home_ '.codeium\mcp_config.json'
       Merge-Json $cfg (Join-Path $Dist 'mcp\windsurf.json')
     }
   }
